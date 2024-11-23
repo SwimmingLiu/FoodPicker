@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小邓今天吃什么？</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dice {
+            font-size: 4rem;
+            margin: 2rem 0;
+            display: inline-block;
+            animation: none;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .rolling {
+            animation: roll 0.8s linear infinite;
+        }
+
+        .food-list {
+            margin-top: 2rem;
+            text-align: left;
+            columns: 2;
+            column-gap: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .food-item {
+            margin-bottom: 0.5rem;
+            break-inside: avoid;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .dice {
+                font-size: 3rem;
+            }
+
+            .result {
+                font-size: 1.2rem;
+                min-height: 60px;
+            }
+
+            .button {
+                padding: 0.8rem 1.6rem;
+                font-size: 1rem;
+            }
+
+            .food-list {
+                columns: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小邓今天吃什么？</h1>
+        <div class="dice" id="dice">🎲</div>
+        <div class="result" id="result">点击下方按钮开始选择</div>
+        <!-- 场景切换按钮 -->
+        <div>
+            <button class="button" id="toggleSceneButton">切换至在家</button>
+            <button class="button" id="rollButton">开始选择</button>
+        </div>
+        <div class="food-list" id="foodList"></div>
+    </div>
+
+    <script>
+        // 食物分类：公司 / 在家
+        const foodCategories = {
+            company: [
+                "大米先生", "醉得意", "兰湘子·湘菜小炒", "如意馄饨", "塔斯汀",
+                "江南家小碗菜", "德华楼·粤菜", "膳熹家·朝鲜拌饭", "一碗湘·麻辣香锅", 
+                "老乡鸡","鸡公煲"
+            ],
+            home: [
+                "汉马哥", "小碗菜", "螺蛳粉", "手工拌面", "烧烤街的炒饭/面",
+                "鸡公煲", "KFC", "塔斯汀", "大米先生", "黄蜀郎鸡公煲","麦当劳","塔斯汀",
+                "醉得意", "兰湘子·湘菜小炒","尊宝比萨"
+            ]
+        };
+
+        const dice = document.getElementById('dice');
+        const result = document.getElementById('result');
+        const rollButton = document.getElementById('rollButton');
+        const foodList = document.getElementById('foodList');
+        const toggleSceneButton = document.getElementById('toggleSceneButton');
+
+        let currentCategory = "company"; // 默认分类为公司
+
+        // 切换食物列表
+        function updateFoodList(category) {
+            currentCategory = category;
+            foodList.innerHTML = ""; // 清空列表
+            foodCategories[category].forEach((food, index) => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.textContent = `${index + 1}. ${food}`;
+                foodList.appendChild(foodItem);
+            });
+        }
+
+        // 初始化默认列表
+        updateFoodList(currentCategory);
+
+        // 切换场景按钮事件
+        toggleSceneButton.addEventListener('click', () => {
+            if (currentCategory === "company") {
+                currentCategory = "home";
+                toggleSceneButton.textContent = "切换至在公司";
+            } else {
+                currentCategory = "company";
+                toggleSceneButton.textContent = "切换至在家";
+            }
+            updateFoodList(currentCategory);
+        });
+
+        let isRolling = false;
+
+        rollButton.addEventListener('click', () => {
+            if (isRolling) return;
+
+            isRolling = true;
+            rollButton.disabled = true;
+            dice.classList.add('rolling');
+            result.style.opacity = '0.5';
+
+            // 随机展示一些食物选项来增加动画效果
+            let count = 0;
+            const maxCount = 20;
+            const interval = setInterval(() => {
+                const categoryFoods = foodCategories[currentCategory];
+                result.textContent = categoryFoods[Math.floor(Math.random() * categoryFoods.length)];
+                count++;
+
+                if (count === maxCount) {
+                    clearInterval(interval);
+                    const categoryFoods = foodCategories[currentCategory];
+                    const finalFood = categoryFoods[Math.floor(Math.random() * categoryFoods.length)];
+
+                    setTimeout(() => {
+                        dice.classList.remove('rolling');
+                        result.style.opacity = '1';
+                        result.textContent = finalFood;
+                        result.classList.add('shake');
+                        rollButton.disabled = false;
+                        isRolling = false;
+
+                        // 移除动画类以便下次使用
+                        setTimeout(() => {
+                            result.classList.remove('shake');
+                        }, 500);
+                    }, 500);
+                }
+            }, 100);
+        });
+        const resultDiv = document.getElementById('result');
+        // 添加长按复制功能
+        let pressTimer;
+
+        resultDiv.addEventListener('mousedown', (e) => {
+            pressTimer = setTimeout(() => {
+                // 将文本内容复制到剪贴板
+                const text = resultDiv.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // 显示复制成功的提示
+                    alert("复制成功！");
+                }).catch(err => {
+                    alert("复制失败，请重试！");
+                });
+            }, 1000); // 设置为长按1秒触发
+        });
+
+        resultDiv.addEventListener('mouseup', () => {
+            clearTimeout(pressTimer); // 如果没有按住1秒，清除定时器
+        });
+
+        resultDiv.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer); // 鼠标移开也清除定时器
+        });
+    </script>
+</body>
+</html>

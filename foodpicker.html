@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,8 +47,13 @@
         }
 
         @keyframes roll {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .result {
@@ -138,8 +144,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .shake {
@@ -147,12 +160,23 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>小邓今天吃什么？</h1>
@@ -170,14 +194,14 @@
         // 食物分类：公司 / 在家
         const foodCategories = {
             company: [
-                "大米先生", "醉得意", "兰湘子·湘菜小炒", "如意馄饨", "塔斯汀",
-                "江南家小碗菜", "德华楼·粤菜", "膳熹家·朝鲜拌饭", "一碗湘·麻辣香锅", 
-                "老乡鸡","鸡公煲"
+                "KFC", "塔斯汀", "大米先生", "擂饭", "袁记云饺",
+                "瓦香鸡", "醉得意", "米村拌饭", "新疆炒米粉", "老乡鸡",
+                "江南家小碗菜"
             ],
             home: [
-                "汉马哥", "小碗菜", "螺蛳粉", "手工拌面", "烧烤街的炒饭/面",
-                "鸡公煲", "KFC", "塔斯汀", "大米先生", "黄蜀郎鸡公煲","麦当劳","塔斯汀",
-                "醉得意", "兰湘子·湘菜小炒","尊宝比萨"
+                "汉马哥", "小碗菜", "小吃街的炒饭/炒面", "冒菜", "KFC", "塔斯汀",
+                "大米先生", "麦当劳", "醉得意", "小菜园", "辣牛肉汤", "重庆万州面",
+                "袁记云饺", "彭厨"
             ]
         };
 
@@ -281,4 +305,5 @@
         });
     </script>
 </body>
+
 </html>
